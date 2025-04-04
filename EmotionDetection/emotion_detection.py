@@ -1,11 +1,11 @@
 import json
 import requests
 
-def emotion_detector(text_to_analyse):  # Define the emotion detection function that takes the string input
+def emotion_detector(text_to_analyze):  # Define the emotion detection function that takes the string input
    # Emotion detection service URL
    url = 'https://sn-watson-emotion.labs.skills.network/v1/watson.runtime.nlp.v1/NlpService/EmotionPredict'
    # Create a dictionary of the input string
-   myobj = { "raw_document": { "text": text_to_analyse } }
+   myobj = { "raw_document": { "text": text_to_analyze } }
    # Set the headers required for the API request
    header = {"grpc-metadata-mm-model-id": "emotion_aggregated-workflow_lang_en_stock"}
    # Send a POST request to the API with the string and header
