@@ -10,36 +10,26 @@ def emotion_detector(text_to_analyze):  # Define the emotion detection function 
    header = {"grpc-metadata-mm-model-id": "emotion_aggregated-workflow_lang_en_stock"}
    # Send a POST request to the API with the string and header
    response = requests.post(url, json = myobj, headers=header) 
+   # Assign the status code to a variable
+   status_code = response.status_code
 
    # Parse the JSON response 
    formatted_response = json.loads(response.text)
 
-   # Generate the formatted response
-   anger_score = formatted_response['emotionPredictions'][0]['emotion']['anger'],
-   disgust_score = formatted_response['emotionPredictions'][0]['emotion']['disgust'],
-   fear_score = formatted_response['emotionPredictions'][0]['emotion']['fear'],
-   joy_score = formatted_response['emotionPredictions'][0]['emotion']['joy'],
-   sadness_score = formatted_response['emotionPredictions'][0]['emotion']['sadness'],
-   dominant_emotion_score = max(anger_score, disgust_score, fear_score, joy_score, sadness_score)
-   if dominant_emotion_score == anger_score:
-      dominant_emotion = 'anger'
-   elif dominant_emotion_score == disgust_score:
-      dominant_emotion = 'disgust'
-   elif dominant_emotion_score == fear_score:
-      dominant_emotion = 'fear'
-   elif dominant_emotion_score == joy_score:
-      dominant_emotion = 'joy'
-   elif dominant_emotion_score == sadness_score:
-      dominant_emotion = 'sadness'
+   # Create a dictionary for the response
+   nlp_emotion_response = {}
    
-   # Return the response
-   emotions_response = {
-                        'anger': anger_score,
-                        'disgust': disgust_score,
-                        'fear': fear_score,
-                        'joy': joy_score,
-                        'sadness': sadness_score,
-                        'dominant_emotion': dominant_emotion
-                        }
-
-   return emotions_response 
+   # Generate the formatted response
+   if status_code == 200:
+        nlp_emotion_response = formatted_response['emotionPredictions'][0]['emotion']
+        dominant_emotion = max(nlp_emotion_response.items(), key=lambda x: x[1])
+        nlp_emotion_response['dominant_emotion'] = dominant_emotion[0]
+   elif status_code == 400:
+        nlp_emotion_response['anger'] = None
+        nlp_emotion_response['disgust'] = None
+        nlp_emotion_response['fear'] = None
+        nlp_emotion_response['joy'] = None
+        nlp_emotion_response['sadness'] = None
+        nlp_emotion_response['dominant_emotion'] = None
+    
+   return nlp_emotion_response
