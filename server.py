@@ -1,11 +1,11 @@
-from flask import Flask, render_template, request 
+from flask import Flask, render_template, request
 
 from EmotionDetection.emotion_detection import emotion_detector
 
 app = Flask("Emotion Detector")
 
 @app.route("/emotionDetector") 
-def emotion_detector(): 
+def emo_detector(): 
 
    # Retrieve the text to analyze from the request arguments 
    text_to_analyze = request.args.get('textToAnalyze') 
@@ -13,17 +13,16 @@ def emotion_detector():
    # Pass the text to the emotion detector function and store the response 
    response = emotion_detector(text_to_analyze) 
 
-   # Parse the JSON response 
-   formatted_response = json.loads(response.text)
-
    # Generate the formatted response
-   anger_score = formatted_response['emotionPredictions'][0]['emotion']['anger'],
-   disgust_score = formatted_response['emotionPredictions'][0]['emotion']['disgust'],
-   fear_score = formatted_response['emotionPredictions'][0]['emotion']['fear'],
-   joy_score = formatted_response['emotionPredictions'][0]['emotion']['joy'],
-   sadness_score = formatted_response['emotionPredictions'][0]['emotion']['sadness'],
+   anger_score = response['anger'],
+   disgust_score = response['disgust'],
+   fear_score = response['fear'],
+   joy_score = response['joy'],
+   sadness_score = response['sadness'],
    dominant_emotion_score = max(anger_score, disgust_score, fear_score, joy_score, sadness_score)
-   if dominant_emotion_score == anger_score:
+   if response['anger'] == None:
+      dominant_emotion = None
+   elif dominant_emotion_score == anger_score:
       dominant_emotion = 'anger'
    elif dominant_emotion_score == disgust_score:
       dominant_emotion = 'disgust'
@@ -35,17 +34,14 @@ def emotion_detector():
       dominant_emotion = 'sadness'
    
    # Return the response
-   emotions_response = {
-                        'anger': anger_score,
-                        'disgust': disgust_score,
-                        'fear': fear_score,
-                        'joy': joy_score,
-                        'sadness': sadness_score,
-                        'dominant_emotion': dominant_emotion
-                        }
-
-   # Extract the emotion and score from the response 
-   return "For the given statement, the system response is {}.".format(emotions_response) 
+   detector_response = f"""For the given statement, the system response is
+    'anger': {anger_score}, 'disgust': {disgust_score}, 'fear': {fear_score}, 'joy': {joy_score}, 'sadness': {sadness_score}.
+    The dominant emotion is {dominant_emotion}.""" 
+   
+   if  dominant_emotion == None:
+        return "Invalid text! Please try again."
+   else:
+        return detector_response
 
 @app.route("/") 
 def render_index_page(): 
