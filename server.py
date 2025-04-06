@@ -33,12 +33,12 @@ def emo_detector():
     if  dominant_emotion is None:
         return "Invalid text! Please try again."
 
-    # Return the response
-    detector_response = f"""For the given statement, the system response is 'anger': {anger_score},
+    # Format and return the response
+    format_response = f"""For the given statement, the system response is 'anger': {anger_score},
     'disgust': {disgust_score}, 'fear': {fear_score}, 'joy': {joy_score}, 'sadness': {sadness_score}.
-    The dominant emotion is {dominant_emotion}."""
+    The dominant emotion is <strong>{dominant_emotion}</strong>."""
 
-    return detector_response
+    return format_response
 
 
 @app.route("/")
